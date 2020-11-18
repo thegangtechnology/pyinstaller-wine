@@ -20,9 +20,10 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Image Naming
-        run: | 
+        run: |
           IMAGE_ID=docker.pkg.github.com/${{ github.repository }}/$IMAGE_NAME
           IMAGE_ID=$(echo $IMAGE_ID | tr '[A-Z]' '[a-z]')
+          echo "IMAGE_ID=`$IMAGE_ID`" >> $GITHUB_ENV
 
       - name: Build image
         run: docker build -t $IMAGE_NAME:$IMAGE_TAG $DOCKERFILE_PATH

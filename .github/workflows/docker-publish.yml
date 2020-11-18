@@ -26,12 +26,11 @@ jobs:
           echo "IMAGE_ID=$IMAGE_ID" >> $GITHUB_ENV
 
       - name: Build image
-        run: docker build -t $IMAGE_NAME:$IMAGE_TAG $DOCKERFILE_PATH
+        run: docker build -t $IMAGE_ID:$IMAGE_TAG $DOCKERFILE_PATH
 
       - name: Log into registry
         run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login docker.pkg.github.com -u ${{ github.actor }} --password-stdin
 
       - name: Push image
         run: |
-          echo "$IMAGE_ID:$IMAGE_TAG"
           docker push $IMAGE_ID:$IMAGE_TAG

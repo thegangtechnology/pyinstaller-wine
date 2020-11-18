@@ -1,0 +1,39 @@
+name: Docker
+
+on:
+  push:
+    # Publish `master` as Docker `latest` image.
+    branches:
+      - master
+env:
+  # TODO: Change variable to your image's name.
+  IMAGE_NAME: docker-pyinstaller
+
+jobs:
+  build_linux_py2:
+    env:
+      IMAGE_TAG: linux_py2
+      DOCKERFILE_PATH: linux/py2/
+    
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push'
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Build image
+        run: docker build $DOCKERFILE_PATH --file Dockerfile --tag $IMAGE_NAME:$IMAGE_TAG
+
+      - name: Log into registry
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login docker.pkg.github.com -u ${{ github.actor }} --password-stdin
+
+      - name: Push image
+        run: |
+          IMAGE_ID=docker.pkg.github.com/${{ github.repository }}/$IMAGE_NAME
+
+          # Change all uppercase to lowercase
+          IMAGE_ID=$(echo $IMAGE_ID | tr '[A-Z]' '[a-z]')
+
+          echo IMAGE_ID=$IMAGE_ID
+
+          docker tag $IMAGE_NAME $IMAGE_ID:$IMAGE_TAG
+          docker push $IMAGE_ID:$IMAGE_TAG

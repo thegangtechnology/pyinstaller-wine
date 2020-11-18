@@ -19,6 +19,10 @@ jobs:
     if: github.event_name == 'push'
     steps:
       - uses: actions/checkout@v2
+      - name: Image Naming
+        run: | 
+          IMAGE_ID=docker.pkg.github.com/${{ github.repository }}/$IMAGE_NAME
+          IMAGE_ID=$(echo $IMAGE_ID | tr '[A-Z]' '[a-z]')
 
       - name: Build image
         run: docker build -t $IMAGE_NAME:$IMAGE_TAG $DOCKERFILE_PATH
@@ -28,12 +32,5 @@ jobs:
 
       - name: Push image
         run: |
-          IMAGE_ID=docker.pkg.github.com/${{ github.repository }}/$IMAGE_NAME
-
-          # Change all uppercase to lowercase
-          IMAGE_ID=$(echo $IMAGE_ID | tr '[A-Z]' '[a-z]')
-
           echo IMAGE_ID=$IMAGE_ID
-
-          docker tag $IMAGE_NAME $IMAGE_ID:$IMAGE_TAG
           docker push $IMAGE_ID:$IMAGE_TAG

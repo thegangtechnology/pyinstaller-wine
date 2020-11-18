@@ -32,5 +32,4 @@ jobs:
 
       - name: Push image
         run: |
-          echo IMAGE_ID=$IMAGE_ID
           docker push $IMAGE_ID:$IMAGE_TAG

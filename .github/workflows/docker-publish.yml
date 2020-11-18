@@ -33,4 +33,5 @@ jobs:
 
       - name: Push image
         run: |
+          echo "$IMAGE_ID:$IMAGE_TAG"
           docker push $IMAGE_ID:$IMAGE_TAG

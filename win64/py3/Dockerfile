@@ -44,7 +44,6 @@ RUN set -x \
     && echo 'wine '\''C:\Python36\python.exe'\'' "$@"' > /usr/bin/python \
     && echo 'wine '\''C:\Python36\Scripts\easy_install.exe'\'' "$@"' > /usr/bin/easy_install \
     && echo 'wine '\''C:\Python36\Scripts\pip.exe'\'' "$@"' > /usr/bin/pip \
-    && echo 'wine '\''C:\Python36\Scripts\pyinstaller.exe'\'' "$@"' > /usr/bin/pyinstaller \
     && echo 'wine '\''C:\Python36\Scripts\pyupdater.exe'\'' "$@"' > /usr/bin/pyupdater \
     && echo 'assoc .py=PythonScript' | wine cmd \
     && echo 'ftype PythonScript=c:\Python36\python.exe "%1" %*' | wine cmd \
@@ -75,7 +74,9 @@ VOLUME /src/
 WORKDIR /wine/drive_c/src/
 RUN mkdir -p /wine/drive_c/tmp
 
-RUN pip install pyinstaller==$PYINSTALLER_VERSION
+RUN pip install pyinstaller==$PYINSTALLER_VERSION \
+    && echo 'wine '\''C:\Python36\Scripts\pyinstaller.exe'\'' "$@"' > /usr/bin/pyinstaller \
+    && chmod +x /usr/bin/pyinstaller
 
 COPY entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh

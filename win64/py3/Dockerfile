@@ -2,9 +2,10 @@ FROM ubuntu:16.04
 
 ENV DEBIAN_FRONTEND noninteractive
 
-ARG WINE_VERSION=winehq-staging
-ARG PYTHON_VERSION=3.7.3
-ARG PYINSTALLER_VERSION=3.4
+ARG WINE_VERSION=winehq-stable
+# Update python version 
+ARG PYTHON_VERSION=3.7.3 
+ARG PYINSTALLER_VERSION=4.0
 
 # we need wine for this all to work, so we'll use the PPA
 RUN set -x \
@@ -37,16 +38,16 @@ RUN set -x \
     && winetricks win7 \
     && for msifile in `echo core dev exe lib path pip tcltk tools`; do \
         wget -nv "https://www.python.org/ftp/python/$PYTHON_VERSION/amd64/${msifile}.msi"; \
-        wine msiexec /i "${msifile}.msi" /qb TARGETDIR=C:/Python36; \
+        wine msiexec /i "${msifile}.msi" /qb TARGETDIR=C:/Python; \
         rm ${msifile}.msi; \
     done \
-    && cd /wine/drive_c/Python36 \
-    && echo 'wine '\''C:\Python36\python.exe'\'' "$@"' > /usr/bin/python \
-    && echo 'wine '\''C:\Python36\Scripts\easy_install.exe'\'' "$@"' > /usr/bin/easy_install \
-    && echo 'wine '\''C:\Python36\Scripts\pip.exe'\'' "$@"' > /usr/bin/pip \
-    && echo 'wine '\''C:\Python36\Scripts\pyupdater.exe'\'' "$@"' > /usr/bin/pyupdater \
+    && cd /wine/drive_c/Python \
+    && echo 'wine '\''C:\Python\python.exe'\'' "$@"' > /usr/bin/python \
+    && echo 'wine '\''C:\Python\Scripts\easy_install.exe'\'' "$@"' > /usr/bin/easy_install \
+    && echo 'wine '\''C:\Python\Scripts\pip.exe'\'' "$@"' > /usr/bin/pip \
+    && echo 'wine '\''C:\Python\Scripts\pyupdater.exe'\'' "$@"' > /usr/bin/pyupdater \
     && echo 'assoc .py=PythonScript' | wine cmd \
-    && echo 'ftype PythonScript=c:\Python36\python.exe "%1" %*' | wine cmd \
+    && echo 'ftype PythonScript=c:\Python\python.exe "%1" %*' | wine cmd \
     && while pgrep wineserver >/dev/null; do echo "Waiting for wineserver"; sleep 1; done \
     && chmod +x /usr/bin/python /usr/bin/easy_install /usr/bin/pip /usr/bin/pyupdater \
     && (pip install -U pip || true) \
@@ -75,7 +76,7 @@ WORKDIR /wine/drive_c/src/
 RUN mkdir -p /wine/drive_c/tmp
 
 RUN pip install pyinstaller==$PYINSTALLER_VERSION \
-    && echo 'wine '\''C:\Python36\Scripts\pyinstaller.exe'\'' "$@"' > /usr/bin/pyinstaller \
+    && echo 'wine '\''C:\Python\Scripts\pyinstaller.exe'\'' "$@"' > /usr/bin/pyinstaller \
     && chmod +x /usr/bin/pyinstaller
 
 COPY entrypoint.sh /entrypoint.sh
